@@ -1,50 +1,35 @@
-import { useHref, useNavigate } from "react-router-dom";
-import { ReactNode, useEffect, useState } from "react";
-
-//import { BoardItemDefinition } from "@cloudscape-design/board-components/internal/interfaces";
-
-import {
-  AppLayout,
-  ContentLayout,
-  Container,
-  Header,
-  Form,
-  SpaceBetween,
-  Button,
-  AlertProps,
-  Box,
-} from "@cloudscape-design/components";
 import {
   Board,
   BoardItem,
   BoardProps,
 } from "@cloudscape-design/board-components";
+import { Header, Box, SpaceBetween } from "@cloudscape-design/components";
+import { useState } from "react";
 
 export default function NotesBoard() {
-  const [items, setItems] = useState([
-    {
-      id: "1",
-      rowSpan: 1,
-      columnSpan: 2,
-      data: { title: "Demo 1", content: "First item" },
-    },
-    {
-      id: "2",
-      rowSpan: 1,
-      columnSpan: 2,
-      data: { title: "Demo 2", content: "Second item" },
-    },
-    {
-      id: "3",
-      rowSpan: 1,
-      columnSpan: 3,
-      data: { title: "Demo 3", content: "Third item" },
-    },
-  ]);
-
+const [items, setItems] = useState([
+{
+    id: "1",
+    rowSpan: 1,
+    columnSpan: 1,
+    data: { title: "Nota 1", content: "Primeiro item" },
+},
+{
+    id: "2",
+    rowSpan: 1,
+    columnSpan: 1,
+    data: { title: "Nota 2", content: "Segundo item" },
+},
+{
+    id: "3",
+    rowSpan: 1,
+    columnSpan: 1,
+    data: { title: "Nota 3", content: "Terceiro item" },
+},
+]);
   return (
     <Board
-      renderItem={(item: any) => (
+      renderItem={(item) => (
         <BoardItem
           header={<Header>{item.data.title}</Header>}
           i18nStrings={{
@@ -61,17 +46,16 @@ export default function NotesBoard() {
       )}
       onItemsChange={(event: any) => setItems(event.detail.items)}
       items={items}
-      empty={<div>No items to display</div>} // Adicionada a propriedade `empty`
-      i18nStrings={(() => {
+      i18nStrings={((): any => {
         function createAnnouncement(
-          operationAnnouncement: any,
-          conflicts: any,
-          disturbed: any
+          operationAnnouncement: string,
+          conflicts: any[] | readonly BoardProps.Item<any>[],
+          disturbed: string | any[] | readonly BoardProps.Item<any>[]
         ) {
           const conflictsAnnouncement =
             conflicts.length > 0
               ? `Conflicts with ${conflicts
-                  .map((c: any) => c.data.title)
+                  .map((c) => c.data.title)
                   .join(", ")}.`
               : "";
           const disturbedAnnouncement =
@@ -85,9 +69,14 @@ export default function NotesBoard() {
             .join(" ");
         }
         return {
-          liveAnnouncementDndStarted: (operationType) =>
+          liveAnnouncementDndStarted: (operationType: string) =>
             operationType === "resize" ? "Resizing" : "Dragging",
-          liveAnnouncementDndItemReordered: (operation) => {
+          liveAnnouncementDndItemReordered: (operation: {
+            placement: { x: number; y: number };
+            direction: string;
+            conflicts: any[] | readonly BoardProps.Item<any>[];
+            disturbed: string | any[] | readonly BoardProps.Item<any>[];
+          }) => {
             const columns = `column ${operation.placement.x + 1}`;
             const rows = `row ${operation.placement.y + 1}`;
             return createAnnouncement(
@@ -98,7 +87,14 @@ export default function NotesBoard() {
               operation.disturbed
             );
           },
-          liveAnnouncementDndItemResized: (operation) => {
+          liveAnnouncementDndItemResized: (operation: {
+            isMinimalColumnsReached: any;
+            isMinimalRowsReached: any;
+            direction: string;
+            placement: { width: any; height: any };
+            conflicts: any[] | readonly BoardProps.Item<any>[];
+            disturbed: string | any[] | readonly BoardProps.Item<any>[];
+          }) => {
             const columnsConstraint = operation.isMinimalColumnsReached
               ? " (minimal)"
               : "";
@@ -115,7 +111,11 @@ export default function NotesBoard() {
               operation.disturbed
             );
           },
-          liveAnnouncementDndItemInserted: (operation) => {
+          liveAnnouncementDndItemInserted: (operation: {
+            placement: { x: number; y: number };
+            conflicts: any[] | readonly BoardProps.Item<any>[];
+            disturbed: string | any[] | readonly BoardProps.Item<any>[];
+          }) => {
             const columns = `column ${operation.placement.x + 1}`;
             const rows = `row ${operation.placement.y + 1}`;
             return createAnnouncement(
@@ -124,9 +124,9 @@ export default function NotesBoard() {
               operation.disturbed
             );
           },
-          liveAnnouncementDndCommitted: (operationType) =>
+          liveAnnouncementDndCommitted: (operationType: any) =>
             `${operationType} committed`,
-          liveAnnouncementDndDiscarded: (operationType) =>
+          liveAnnouncementDndDiscarded: (operationType: any) =>
             `${operationType} discarded`,
           liveAnnouncementItemRemoved: (op: any) =>
             createAnnouncement(
@@ -137,10 +137,24 @@ export default function NotesBoard() {
           navigationAriaLabel: "Board navigation",
           navigationAriaDescription:
             "Click on non-empty item to move focus over",
-          navigationItemAriaLabel: (item: any) =>
+          navigationItemAriaLabel: (item: BoardProps.Item<any>) =>
             item ? item.data.title : "Empty",
         };
       })()}
+      empty={
+        <Box textAlign="center" color="inherit">
+          <SpaceBetween size="xxs">
+            <div>
+              <Box variant="strong" color="inherit">
+                Nenhum item.
+              </Box>
+              <Box variant="p" color="inherit">
+                Não há nenhum item neste painel.
+              </Box>
+            </div>
+          </SpaceBetween>
+        </Box>
+      }
     />
   );
 }
