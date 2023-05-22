@@ -3,35 +3,67 @@ import {
   BoardItem,
   BoardProps,
 } from "@cloudscape-design/board-components";
-import { Header, Box, SpaceBetween } from "@cloudscape-design/components";
+import {
+  Header,
+  Box,
+  SpaceBetween,
+  ButtonDropdown,
+  Button,
+} from "@cloudscape-design/components";
 import { useState } from "react";
 
 export default function NotesBoard() {
-const [items, setItems] = useState([
-{
-    id: "1",
-    rowSpan: 1,
-    columnSpan: 1,
-    data: { title: "Nota 1", content: "Primeiro item" },
-},
-{
-    id: "2",
-    rowSpan: 1,
-    columnSpan: 1,
-    data: { title: "Nota 2", content: "Segundo item" },
-},
-{
-    id: "3",
-    rowSpan: 1,
-    columnSpan: 1,
-    data: { title: "Nota 3", content: "Terceiro item" },
-},
-]);
+  const [items, setItems] = useState([
+    {
+      id: "1",
+      rowSpan: 1,
+      columnSpan: 1,
+      data: { title: "Nota 1", content: "Primeiro item" },
+    },
+    {
+      id: "2",
+      rowSpan: 1,
+      columnSpan: 1,
+      data: { title: "Nota 2", content: "Segundo item" },
+    },
+    {
+      id: "3",
+      rowSpan: 1,
+      columnSpan: 1,
+      data: { title: "Nota 3", content: "Terceiro item" },
+    },
+  ]);
+
+  function handleButtonDropdownClick(item: any, buttonId: any, actions: any) {
+    switch (buttonId) {
+      case "edit":
+        break;
+      case "remove":
+        actions.removeItem();
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     <Board
-      renderItem={(item) => (
+      renderItem={(item, actions) => (
         <BoardItem
           header={<Header>{item.data.title}</Header>}
+          settings={
+            <ButtonDropdown
+              items={[
+                { id: "edit", text: "Editar" },
+                { id: "remove", text: "Remover" },
+              ]}
+              ariaLabel="Configurações do quadro de anotações"
+              variant="icon"
+              onItemClick={(event: any) =>
+                handleButtonDropdownClick(item, event.detail.id, actions)
+              }
+            />
+          }
           i18nStrings={{
             dragHandleAriaLabel: "Drag handle",
             dragHandleAriaDescription:
@@ -46,6 +78,21 @@ const [items, setItems] = useState([
       )}
       onItemsChange={(event: any) => setItems(event.detail.items)}
       items={items}
+      empty={
+        <Box textAlign="center" color="inherit">
+          <SpaceBetween size="xxs">
+            <div>
+              <Box variant="strong" color="inherit">
+                Nenhuma nota
+              </Box>
+              <Box variant="p" color="inherit">
+                Não há notas neste quadro.
+              </Box>
+            </div>
+            <Button iconName="add-plus">Adicionar uma nota</Button>
+          </SpaceBetween>
+        </Box>
+      }
       i18nStrings={((): any => {
         function createAnnouncement(
           operationAnnouncement: string,
@@ -141,20 +188,6 @@ const [items, setItems] = useState([
             item ? item.data.title : "Empty",
         };
       })()}
-      empty={
-        <Box textAlign="center" color="inherit">
-          <SpaceBetween size="xxs">
-            <div>
-              <Box variant="strong" color="inherit">
-                Nenhum item.
-              </Box>
-              <Box variant="p" color="inherit">
-                Não há nenhum item neste painel.
-              </Box>
-            </div>
-          </SpaceBetween>
-        </Box>
-      }
     />
   );
 }
