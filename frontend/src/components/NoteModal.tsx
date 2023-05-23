@@ -3,7 +3,13 @@ import {
   Box,
   SpaceBetween,
   Button,
+  Form,
+  FormField,
+  Input,
+  Textarea,
 } from "@cloudscape-design/components";
+import { useState } from "react";
+import { NoteContent } from "../types";
 
 interface NoteModalProps {
   visible: boolean;
@@ -11,6 +17,8 @@ interface NoteModalProps {
 }
 
 export default function NoteModal(props: NoteModalProps) {
+  const [fields, setFields] = useState<NoteContent>({ title: "", content: "" });
+
   return (
     <Modal
       onDismiss={() => props.setVisible(false)}
@@ -30,7 +38,28 @@ export default function NoteModal(props: NoteModalProps) {
       }
       header="Editar anotação"
     >
-      Conteúdo do modal
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Form variant="embedded">
+          <SpaceBetween direction="vertical" size="l">
+            <FormField label="Título">
+              <Input
+                value={fields.title}
+                onChange={(event) => {
+                  setFields({ ...fields, title: event.detail.value });
+                }}
+              />
+            </FormField>
+            <FormField label={"Conteúdo"}>
+              <Textarea
+                value={fields.content}
+                onChange={(event) => {
+                  setFields({ ...fields, content: event.detail.value });
+                }}
+              />
+            </FormField>
+          </SpaceBetween>
+        </Form>
+      </form>
     </Modal>
   );
 }
