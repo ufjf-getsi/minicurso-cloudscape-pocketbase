@@ -16,6 +16,7 @@ interface NoteModalProps {
   setVisible: Function;
   noteContent: NoteContent;
   handleNoteUpdate: Function;
+  isEditing: boolean;
 }
 
 export default function NoteModal(props: NoteModalProps) {
@@ -28,7 +29,7 @@ export default function NoteModal(props: NoteModalProps) {
 
   function handleSubmit() {
     if (fields.title !== "" && fields.content !== "") {
-      props.handleNoteUpdate(fields);
+      props.handleNoteUpdate(fields, props.isEditing);
     }
   }
 
