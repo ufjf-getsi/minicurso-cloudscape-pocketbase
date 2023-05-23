@@ -3,6 +3,10 @@ import {
   Box,
   SpaceBetween,
   Button,
+  Form,
+  FormField,
+  Input,
+  Textarea,
 } from "@cloudscape-design/components";
 
 interface NoteModalProps {
@@ -30,7 +34,18 @@ export default function NoteModal(props: NoteModalProps) {
       }
       header="Editar anotação"
     >
-      Conteúdo do modal
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Form variant="embedded">
+          <SpaceBetween direction="vertical" size="l">
+            <FormField label="Título">
+              <Input value={""} />
+            </FormField>
+            <FormField label={"Conteúdo"}>
+              <Textarea value={""} />
+            </FormField>
+          </SpaceBetween>
+        </Form>
+      </form>
     </Modal>
   );
 }
