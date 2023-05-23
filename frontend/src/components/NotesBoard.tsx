@@ -16,7 +16,7 @@ import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
 
 export default function NotesBoard() {
-  const [notes, setNotes] = useState([
+  const [notes, setNotes] = useState<Note[]>([
     {
       id: "1",
       rowSpan: 1,
@@ -36,15 +36,57 @@ export default function NotesBoard() {
       data: { title: "Nota 3", content: "Terceiro item" },
     },
   ]);
-  const [modalVisible, setModalVisible] = useState(false);
+
   const NOTE_UNSET = "";
+  const emptyNoteContent = { title: "", content: "" };
+  const [newNotesCounter, setNewNotesCounter] = useState(0);
+
   const [currentNoteId, setCurrentNoteId] = useState<string>(NOTE_UNSET);
-  const currentNote: Note = (note?: Note) => {
-    if (note) return note;
-    else return notes.find((note) => note.id === currentNoteId);
-  };
-  let newNotesCounter = 0;
+  const [updatingNoteContent, setUpdatingNoteContent] = useState<NoteContent>({
+    title: "",
+    content: "",
+  });
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function getNoteById(noteId: string) {
+    return notes.find((note) => note.id === noteId);
+  }
+
+  function addNote(noteContent: NoteContent) {
+    const newNote = {
+      id: "NEW_" + newNotesCounter,
+      rowSpan: 1,
+      columnSpan: 1,
+      data: noteContent,
+    };
+    setNewNotesCounter(newNotesCounter + 1);
+    setNotes([...notes, newNote]);
+  }
+
+  function editNote(noteContent: NoteContent) {
+    const noteToEdit = getNoteById(currentNoteId);
+    if (noteToEdit) {
+      noteToEdit.data = noteContent;
+      setNotes(notes);
+    }
+    setCurrentNoteId(NOTE_UNSET);
+  }
+
+  function handleNoteUpdate(newData: NoteContent) {
+    if (isEditing) {
+      editNote(newData);
+    } else {
+      addNote(newData);
+    }
+    setModalVisible(false);
+  }
+
+  function handleAddNoteButtonClick() {
+    setUpdatingNoteContent(emptyNoteContent);
+    setIsEditing(false);
+    setModalVisible(true);
+  }
 
   function handleButtonDropdownClick(
     noteId: string,
@@ -54,6 +96,7 @@ export default function NotesBoard() {
     switch (buttonId) {
       case "edit":
         setCurrentNoteId(noteId);
+        setUpdatingNoteContent(getNoteById(noteId)?.data ?? emptyNoteContent);
         setIsEditing(true);
         setModalVisible(true);
         break;
@@ -65,41 +108,13 @@ export default function NotesBoard() {
     }
   }
 
-  function addNote() {
-    const newNote = {
-      id: "new" + newNotesCounter,
-      rowSpan: 1,
-      columnSpan: 1,
-      data: { title: "", content: "" },
-    };
-    newNotesCounter++;
-    setCurrentNoteId(newNote.id);
-    setIsEditing(false);
-    setModalVisible(true);
-  }
-
-  function handleNoteUpdate(newData: NoteContent, edit: boolean) {
-    console.log(currentNote);
-    if (currentNote) {
-      currentNote.data = newData;
-      if (edit) {
-        setNotes(notes);
-      } else {
-        setNotes([...notes, currentNote]);
-      }
-    }
-    setModalVisible(false);
-    setCurrentNoteId(NOTE_UNSET);
-  }
-
   return (
     <div>
       <NoteModal
         visible={modalVisible}
         setVisible={setModalVisible}
-        noteContent={currentNote?.data ?? { title: "", content: "" }}
+        noteContent={updatingNoteContent}
         handleNoteUpdate={handleNoteUpdate}
-        isEditing={isEditing}
       />
       <Container
         header={
@@ -107,7 +122,7 @@ export default function NotesBoard() {
             variant="h2"
             description="Você pode adicionar, editar e remover anotações."
             actions={
-              <Button iconName="add-plus" onClick={addNote}>
+              <Button iconName="add-plus" onClick={handleAddNoteButtonClick}>
                 Nova
               </Button>
             }
