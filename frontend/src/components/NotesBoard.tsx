@@ -12,9 +12,10 @@ import {
 } from "@cloudscape-design/components";
 import { useState } from "react";
 import NoteModal from "./NoteModal";
+import { NoteContent } from "../types";
 
 export default function NotesBoard() {
-  const [items, setItems] = useState([
+  const [notes, setNotes] = useState([
     {
       id: "1",
       rowSpan: 1,
@@ -35,9 +36,14 @@ export default function NotesBoard() {
     },
   ]);
 
-  function handleButtonDropdownClick(item: any, buttonId: any, actions: any) {
+  function handleButtonDropdownClick(
+    noteId: string,
+    buttonId: any,
+    actions: any
+  ) {
     switch (buttonId) {
       case "edit":
+        setCurrentNoteId(noteId);
         setModalVisible(true);
         break;
       case "remove":
@@ -49,10 +55,28 @@ export default function NotesBoard() {
   }
 
   const [modalVisible, setModalVisible] = useState(false);
+  const NOTE_UNSET = "";
+  const [currentNoteId, setCurrentNoteId] = useState<string>(NOTE_UNSET);
+  const currentNote = notes.find((note) => note.id === currentNoteId);
+
+  function handleNoteUpdate(newData: NoteContent) {
+    // TODO: Atualiza no banco de dados
+    if (currentNote) {
+      currentNote.data = newData;
+      setNotes(notes);
+    }
+    setModalVisible(false);
+    setCurrentNoteId(NOTE_UNSET);
+  }
 
   return (
     <div>
-      <NoteModal visible={modalVisible} setVisible={setModalVisible} />
+      <NoteModal
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        noteContent={currentNote?.data ?? { title: "", content: "" }}
+        handleNoteUpdate={handleNoteUpdate}
+      />
       <Board
         renderItem={(item, actions) => (
           <BoardItem
@@ -66,7 +90,7 @@ export default function NotesBoard() {
                 ariaLabel="Configurações do quadro de anotações"
                 variant="icon"
                 onItemClick={(event: any) =>
-                  handleButtonDropdownClick(item, event.detail.id, actions)
+                  handleButtonDropdownClick(item.id, event.detail.id, actions)
                 }
               />
             }
@@ -82,8 +106,8 @@ export default function NotesBoard() {
             {item.data.content}
           </BoardItem>
         )}
-        onItemsChange={(event: any) => setItems(event.detail.items)}
-        items={items}
+        onItemsChange={(event: any) => setNotes(event.detail.items)}
+        items={notes}
         empty={
           <Box textAlign="center" color="inherit">
             <SpaceBetween size="xxs">
