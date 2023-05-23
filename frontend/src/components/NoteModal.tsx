@@ -8,16 +8,22 @@ import {
   Input,
   Textarea,
 } from "@cloudscape-design/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NoteContent } from "../types";
 
 interface NoteModalProps {
   visible: boolean;
   setVisible: Function;
+  noteContent: NoteContent;
 }
 
 export default function NoteModal(props: NoteModalProps) {
-  const [fields, setFields] = useState<NoteContent>({ title: "", content: "" });
+  const [fields, setFields] = useState<NoteContent>(props.noteContent);
+
+  // Recarregar campos ao reabrir o modal
+  useEffect(() => {
+    setFields(props.noteContent);
+  }, [props.visible]);
 
   return (
     <Modal

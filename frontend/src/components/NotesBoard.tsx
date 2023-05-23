@@ -12,9 +12,10 @@ import {
 } from "@cloudscape-design/components";
 import { useState } from "react";
 import NoteModal from "./NoteModal";
+import { Note, NoteContent } from "../types";
 
 export default function NotesBoard() {
-  const [notes, setNotes] = useState([
+  const [notes, setNotes] = useState<Note[]>([
     {
       id: "1",
       rowSpan: 1,
@@ -35,11 +36,27 @@ export default function NotesBoard() {
     },
   ]);
 
+  const NOTE_UNSET = "";
+  const emptyNoteContent = { title: "", content: "" };
+
+  const [updatingNoteContent, setUpdatingNoteContent] =
+    useState<NoteContent>(emptyNoteContent);
+  const [currentNoteId, setCurrentNoteId] = useState<string>(NOTE_UNSET);
   const [modalVisible, setModalVisible] = useState(false);
 
-  function handleButtonDropdownClick(item: any, buttonId: any, actions: any) {
+  function getNoteById(noteId: string) {
+    return notes.find((note) => note.id === noteId);
+  }
+
+  function handleButtonDropdownClick(
+    noteId: string,
+    buttonId: any,
+    actions: any
+  ) {
     switch (buttonId) {
       case "edit":
+        setCurrentNoteId(noteId);
+        setUpdatingNoteContent(getNoteById(noteId)?.data ?? emptyNoteContent);
         setModalVisible(true);
         break;
       case "remove":
@@ -52,7 +69,11 @@ export default function NotesBoard() {
 
   return (
     <div>
-      <NoteModal visible={modalVisible} setVisible={setModalVisible} />
+      <NoteModal
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        noteContent={updatingNoteContent}
+      />
       <Board
         renderItem={(item, actions) => (
           <BoardItem
@@ -66,7 +87,7 @@ export default function NotesBoard() {
                 ariaLabel="Configurações do quadro de anotações"
                 variant="icon"
                 onItemClick={(event: any) =>
-                  handleButtonDropdownClick(item, event.detail.id, actions)
+                  handleButtonDropdownClick(item.id, event.detail.id, actions)
                 }
               />
             }
