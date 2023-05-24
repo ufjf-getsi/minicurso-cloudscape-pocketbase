@@ -16,6 +16,7 @@ interface NoteModalProps {
   setVisible: Function;
   noteContent: NoteContent;
   handleNoteUpdate: Function;
+  isEditing: boolean;
 }
 
 export default function NoteModal(props: NoteModalProps) {
@@ -44,12 +45,12 @@ export default function NoteModal(props: NoteModalProps) {
               Cancelar
             </Button>
             <Button variant="primary" onClick={handleSubmit}>
-              Editar
+              {props.isEditing ? "Editar" : "Adicionar"}
             </Button>
           </SpaceBetween>
         </Box>
       }
-      header="Editar anotação"
+      header={`${props.isEditing ? "Editar" : "Adicionar"} anotação`}
     >
       <form onSubmit={(e) => e.preventDefault()}>
         <Form variant="embedded">

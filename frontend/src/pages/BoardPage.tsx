@@ -33,9 +33,7 @@ export default function BoardPage() {
               </SpaceBetween>
             }
           >
-            <Container>
-              <NotesBoard />
-            </Container>
+            <NotesBoard />
           </ContentLayout>
         }
       />
