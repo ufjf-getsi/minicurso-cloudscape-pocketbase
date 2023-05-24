@@ -45,6 +45,7 @@ export default function NotesBoard() {
     useState<NoteContent>(emptyNoteContent);
   const [currentNoteId, setCurrentNoteId] = useState<string>(NOTE_UNSET);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   function getNoteById(noteId: string) {
@@ -72,6 +73,7 @@ export default function NotesBoard() {
   }
 
   function handleNoteUpdate(newData: NoteContent) {
+    setHasChanged(true);
     if (isEditing) {
       editNote(newData);
     } else {
@@ -100,11 +102,23 @@ export default function NotesBoard() {
         setModalVisible(true);
         break;
       case "remove":
+        setHasChanged(true);
         actions.removeItem();
         break;
       default:
         break;
     }
+  }
+
+  function handleItemsChange(event: any) {
+    setNotes(event.detail.items);
+    setHasChanged(true);
+  }
+
+  function handleSaveButtonClick() {
+    console.log(notes);
+    // TODO: Save notes to database
+    setHasChanged(false);
   }
 
   return (
@@ -123,6 +137,13 @@ export default function NotesBoard() {
             description="Você pode adicionar, editar e remover anotações."
             actions={
               <SpaceBetween direction="horizontal" size="xs">
+                <Button
+                  iconName="upload-download"
+                  disabled={!hasChanged}
+                  onClick={handleSaveButtonClick}
+                >
+                  Salvar
+                </Button>
                 <Button
                   variant="primary"
                   iconName="add-plus"
@@ -166,7 +187,7 @@ export default function NotesBoard() {
               {item.data.content}
             </BoardItem>
           )}
-          onItemsChange={(event: any) => setNotes(event.detail.items)}
+          onItemsChange={(event: any) => handleItemsChange(event)}
           items={notes}
           empty={
             <Box textAlign="center" color="inherit">
