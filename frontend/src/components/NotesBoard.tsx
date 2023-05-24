@@ -48,6 +48,20 @@ export default function NotesBoard() {
     return notes.find((note) => note.id === noteId);
   }
 
+function editNote(noteContent: NoteContent) {
+  const noteToEdit = getNoteById(currentNoteId);
+  if (noteToEdit) {
+    noteToEdit.data = noteContent;
+    setNotes(notes);
+  }
+  setCurrentNoteId(NOTE_UNSET);
+}
+
+function handleNoteUpdate(newData: NoteContent) {
+  editNote(newData);
+  setModalVisible(false);
+}
+
   function handleButtonDropdownClick(
     noteId: string,
     buttonId: any,
@@ -73,6 +87,7 @@ export default function NotesBoard() {
         visible={modalVisible}
         setVisible={setModalVisible}
         noteContent={updatingNoteContent}
+        handleNoteUpdate={handleNoteUpdate}
       />
       <Board
         renderItem={(item, actions) => (

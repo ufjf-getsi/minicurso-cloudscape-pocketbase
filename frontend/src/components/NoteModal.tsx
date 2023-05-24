@@ -15,6 +15,7 @@ interface NoteModalProps {
   visible: boolean;
   setVisible: Function;
   noteContent: NoteContent;
+  handleNoteUpdate: Function;
 }
 
 export default function NoteModal(props: NoteModalProps) {
@@ -24,6 +25,12 @@ export default function NoteModal(props: NoteModalProps) {
   useEffect(() => {
     setFields(props.noteContent);
   }, [props.visible]);
+
+  function handleSubmit() {
+    if (fields.title !== "" && fields.content !== "") {
+      props.handleNoteUpdate(fields);
+    }
+  }
 
   return (
     <Modal
@@ -36,7 +43,7 @@ export default function NoteModal(props: NoteModalProps) {
             <Button variant="link" onClick={() => props.setVisible(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={undefined}>
+            <Button variant="primary" onClick={handleSubmit}>
               Editar
             </Button>
           </SpaceBetween>
