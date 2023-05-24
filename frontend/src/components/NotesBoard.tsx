@@ -41,11 +41,9 @@ export default function NotesBoard() {
   const emptyNoteContent = { title: "", content: "" };
   const [newNotesCounter, setNewNotesCounter] = useState(0);
 
+  const [updatingNoteContent, setUpdatingNoteContent] =
+    useState<NoteContent>(emptyNoteContent);
   const [currentNoteId, setCurrentNoteId] = useState<string>(NOTE_UNSET);
-  const [updatingNoteContent, setUpdatingNoteContent] = useState<NoteContent>({
-    title: "",
-    content: "",
-  });
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -86,6 +84,7 @@ export default function NotesBoard() {
 
   function handleAddNoteButtonClick() {
     setUpdatingNoteContent(emptyNoteContent);
+    setCurrentNoteId(NOTE_UNSET);
     setIsEditing(false);
     setModalVisible(true);
   }
@@ -98,11 +97,12 @@ export default function NotesBoard() {
     switch (buttonId) {
       case "edit":
         setCurrentNoteId(noteId);
-        setUpdatingNoteContent(getNoteById(noteId)?.data ?? emptyNoteContent);
         setIsEditing(true);
+        setUpdatingNoteContent(getNoteById(noteId)?.data ?? emptyNoteContent);
         setModalVisible(true);
         break;
       case "remove":
+        setHasChanged(true);
         actions.removeItem();
         break;
       default:
@@ -110,15 +110,15 @@ export default function NotesBoard() {
     }
   }
 
+  function handleItemsChange(event: any) {
+    setNotes(event.detail.items);
+    setHasChanged(true);
+  }
+
   function handleSaveButtonClick() {
     console.log(notes);
     // TODO: Save notes to database
     setHasChanged(false);
-  }
-
-  function handleItemsChange(event: any) {
-    setNotes(event.detail.items);
-    setHasChanged(true);
   }
 
   return (
@@ -128,6 +128,7 @@ export default function NotesBoard() {
         setVisible={setModalVisible}
         noteContent={updatingNoteContent}
         handleNoteUpdate={handleNoteUpdate}
+        isEditing={isEditing}
       />
       <Container
         header={
