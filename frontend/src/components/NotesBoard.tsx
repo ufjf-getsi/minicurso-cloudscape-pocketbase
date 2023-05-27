@@ -154,7 +154,7 @@ export default function NotesBoard() {
             columnSpan,
         }));
 
-        //Junta os dois
+        //Junta os dois adiconando o conteudo dentro do novo campo "data"
         const newArrayTeste: Note[] = [];
         for (let i = 0; i < notesWithRightFields.length; i++) {
             const record = {...notesWithRightFields[i], data: noteContentArray[i]};
@@ -167,7 +167,7 @@ export default function NotesBoard() {
   }, []);
 
 
-  
+
   return (
     <div>
       <NoteModal
