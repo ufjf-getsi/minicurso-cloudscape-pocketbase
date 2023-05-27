@@ -11,9 +11,9 @@ import {
   Button,
   Container,
 } from "@cloudscape-design/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
-import { Note, NoteContent } from "../types";
+import { Note, NoteContent, NoteContentPocketBase, NotePocketBase } from "../types";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -121,6 +121,46 @@ export default function NotesBoard() {
     setHasChanged(false);
   }
 
+  useEffect(() => {
+    const  fetchNotes = async () => {
+      const res = await fetch(
+        'http://127.0.0.1:8090/api/collections/note/records?expand=data',
+      );
+      const data = await res.json();
+      return data?.items as NotePocketBase[];
+    };
+
+
+    const promise = Promise.resolve(fetchNotes());
+
+    promise.then((value) => {
+
+        let noteContentArray: NoteContent[] = [];
+        value.map(({ expand }) => {
+            const newObj = {title : expand.data.title, content: expand.data.content}
+            noteContentArray.push(newObj);
+        });
+
+
+        const notesWithRightFields = value.map(({id, rowSpan, columnSpan}) =>({
+            id,
+            rowSpan,
+            columnSpan,
+        }));
+
+        const newArrayTeste: Note[] = [];
+        for (let i = 0; i < notesWithRightFields.length; i++) {
+            const record = {...notesWithRightFields[i], data: noteContentArray[i]};
+            newArrayTeste.push(record);            
+        }
+
+        console.log(newArrayTeste)
+
+        setNotes(newArrayTeste);
+    })
+
+    console.log(fetchNotes())
+  }, []);
   return (
     <div>
       <NoteModal
