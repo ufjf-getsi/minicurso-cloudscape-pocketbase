@@ -13,8 +13,8 @@ import {
 } from "@cloudscape-design/components";
 import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
-import { Note, NoteContent, NotePocketBase } from "../types";
-import { fetchData } from "../fuctions";
+import { Note, NoteContent } from "../types";
+import { addNotePocketBase, fetchData } from "../fuctions";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -40,7 +40,7 @@ export default function NotesBoard() {
 
   const NOTE_UNSET = "";
   const emptyNoteContent = { title: "", content: "" };
-  const [newNotesCounter, setNewNotesCounter] = useState(0);
+  // const [newNotesCounter, setNewNotesCounter] = useState(0);
 
   const [updatingNoteContent, setUpdatingNoteContent] =
     useState<NoteContent>(emptyNoteContent);
@@ -55,13 +55,14 @@ export default function NotesBoard() {
 
   function addNote(noteContent: NoteContent) {
     const newNote = {
-      id: "NEW_" + newNotesCounter,
+      id: "",
       rowSpan: 1,
       columnSpan: 1,
       data: noteContent,
     };
-    setNewNotesCounter(newNotesCounter + 1);
-    setNotes([...notes, newNote]);
+    addNotePocketBase(newNote);
+    // setNewNotesCounter(newNotesCounter + 1);
+    // setNotes([...notes, newNote]);
   }
 
   function editNote(noteContent: NoteContent) {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NotePocketBase, NoteContent, Note } from "./types";
 
 //puxa as notas criadas no pocketbase
@@ -40,4 +41,20 @@ export function fetchData (setStateDataFuc : Function){
           //seta o novo estado das notas
           setStateDataFuc(newArrayTeste);
       })
+}
+
+export async function addNotePocketBase(newNote : Note){
+    const title = newNote.data.title;
+    const content = newNote.data.content;
+    await fetch('http://127.0.0.1:8090/api/collections/noteContent/records', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title,
+            content,
+        })
+    });
+    console.log(title)
 }
