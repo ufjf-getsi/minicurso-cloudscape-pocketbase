@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { NotePocketBase, NoteContent, Note } from "./types";
 
-//puxa as notas criadas no pocketbase
+//LISTA TODAS AS NOTAS DO BD
 export function fetchData(setStateDataFuc: Function) {
   const fetchNotes = async () => {
     const res = await fetch(
@@ -42,12 +41,16 @@ export function fetchData(setStateDataFuc: Function) {
   });
 }
 
+
+//ADICIONA NOTA NO BD
 export async function addNotePocketBase(newNote: Note) {
   const title = newNote.data.title;
   const content = newNote.data.content;
   const rowSpan = newNote.rowSpan;
   const columnSpan = newNote.columnSpan;
 
+
+  //cria primeiro o noteContent
   const response = await fetch(
     "http://127.0.0.1:8090/api/collections/noteContent/records",
     {
@@ -66,9 +69,13 @@ export async function addNotePocketBase(newNote: Note) {
     throw new Error("Erro ao adicionar registro");
   }
 
+  //pega o json gerado pelo metodo POST
   const noteContent = await response.json();
+
+  //pega o id do noteContent gerado
   const data: string = noteContent.id;
 
+  //cria o Note com o id do noteContent no atributo data 
   const response2 = await fetch(
     "http://127.0.0.1:8090/api/collections/note/records",
     {
@@ -89,7 +96,10 @@ export async function addNotePocketBase(newNote: Note) {
   }
 }
 
+
+//APAGA NOTA NO BD
 export async function deleteNotePocketBase(id: string) {
+  //busca a note em questão pelo id para pegar o id do noteContent
   const response = await fetch(
     `http://127.0.0.1:8090/api/collections/note/records/${id}`,
     {
@@ -102,8 +112,11 @@ export async function deleteNotePocketBase(id: string) {
   const promise = Promise.resolve(data);
 
   promise.then(async (value) => {
+    //pega o id do noteContent
     const noteContentId = value.data;
 
+
+    //deleta o noteContent (que por cascata deleta o Note)
     const response = await fetch(
       `http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`,
       {
@@ -113,6 +126,52 @@ export async function deleteNotePocketBase(id: string) {
 
     if (!response.ok) {
       throw new Error("Erro ao excluir registro");
+    }
+  });
+}
+
+//EDITA NOTA NO BD
+export async function editNotePocketBase(id: string, noteContent : NoteContent) {
+  //busca a note em questão pelo id para pegar o id do noteContent
+  const response = await fetch(
+    `http://127.0.0.1:8090/api/collections/note/records/${id}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Erro ao editar puxar id de registro');
+  }
+
+  const data = await response.json();
+
+  //resolve o problema das promessas
+  const promise = Promise.resolve(data);
+
+  promise.then(async (value) => {
+
+    //pega o id do noteContent
+    const noteContentId = value.data;
+    
+    //salva os valores da mudança em constantes
+    const title = noteContent.title;
+    const content = noteContent.content;
+
+    //faz a edição
+    const response = await fetch(`http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`, {
+      method: 'PATCH', // ou 'PATCH' para atualização parcial
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title, 
+        content,
+      }),
+    });
+  
+    if (!response.ok) {
+      throw new Error('Erro ao editar registro');
     }
   });
 }

@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
-import { addNotePocketBase, deleteNotePocketBase, fetchData } from "../fuctions";
+import { addNotePocketBase, deleteNotePocketBase, editNotePocketBase, fetchData } from "../fuctions";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -69,7 +69,7 @@ export default function NotesBoard() {
     const noteToEdit = getNoteById(currentNoteId);
     if (noteToEdit) {
       // noteToEdit.data = noteContent;
-      
+      editNotePocketBase(currentNoteId, noteContent);
       setNotes(notes);
     }
     setCurrentNoteId(NOTE_UNSET);
