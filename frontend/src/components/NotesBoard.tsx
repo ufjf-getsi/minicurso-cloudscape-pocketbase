@@ -11,9 +11,10 @@ import {
   Button,
   Container,
 } from "@cloudscape-design/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
+import { addNotePocketBase, deleteNotePocketBase, editNotePocketBase, fetchData } from "../dbConnection";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -39,7 +40,7 @@ export default function NotesBoard() {
 
   const NOTE_UNSET = "";
   const emptyNoteContent = { title: "", content: "" };
-  const [newNotesCounter, setNewNotesCounter] = useState(0);
+  // const [newNotesCounter, setNewNotesCounter] = useState(0);
 
   const [updatingNoteContent, setUpdatingNoteContent] =
     useState<NoteContent>(emptyNoteContent);
@@ -54,19 +55,21 @@ export default function NotesBoard() {
 
   function addNote(noteContent: NoteContent) {
     const newNote = {
-      id: "NEW_" + newNotesCounter,
+      id: "",
       rowSpan: 1,
       columnSpan: 1,
       data: noteContent,
     };
-    setNewNotesCounter(newNotesCounter + 1);
-    setNotes([...notes, newNote]);
+    addNotePocketBase(newNote);
+    // setNewNotesCounter(newNotesCounter + 1);
+    // setNotes([...notes, newNote]);
   }
 
   function editNote(noteContent: NoteContent) {
     const noteToEdit = getNoteById(currentNoteId);
     if (noteToEdit) {
-      noteToEdit.data = noteContent;
+      // noteToEdit.data = noteContent;
+      editNotePocketBase(currentNoteId, noteContent);
       setNotes(notes);
     }
     setCurrentNoteId(NOTE_UNSET);
@@ -103,7 +106,8 @@ export default function NotesBoard() {
         break;
       case "remove":
         setHasChanged(true);
-        actions.removeItem();
+        // actions.removeItem();
+        deleteNotePocketBase(noteId);
         break;
       default:
         break;
@@ -120,6 +124,11 @@ export default function NotesBoard() {
     // TODO: Save notes to database
     setHasChanged(false);
   }
+
+  //PARTE DE PUXAR AS NOTAS PELO PROPRIO POCKETBASE
+  useEffect(() => {
+    fetchData(setNotes);
+  }, [notes]);
 
   return (
     <div>
