@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
-import { addNotePocketBase, deleteNotePocketBase, editNotePocketBase, fetchData } from "../fuctions";
+import { addNotePocketBase, deleteNotePocketBase, editNotePocketBase, fetchData } from "../dbConnection";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
