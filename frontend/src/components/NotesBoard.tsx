@@ -14,7 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
-import { addNotePocketBase, fetchData } from "../fuctions";
+import { addNotePocketBase, deleteNotePocketBase, fetchData } from "../fuctions";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -105,7 +105,8 @@ export default function NotesBoard() {
         break;
       case "remove":
         setHasChanged(true);
-        actions.removeItem();
+        // actions.removeItem();
+        deleteNotePocketBase(noteId);
         break;
       default:
         break;
@@ -126,7 +127,7 @@ export default function NotesBoard() {
   //PARTE DE PUXAR AS NOTAS PELO PROPRIO POCKETBASE
   useEffect(() => {
     fetchData(setNotes);
-  }, []);
+  }, [notes]);
 
   return (
     <div>

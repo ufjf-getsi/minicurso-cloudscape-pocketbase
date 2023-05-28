@@ -46,7 +46,7 @@ export async function addNotePocketBase(newNote: Note) {
   const title = newNote.data.title;
   const content = newNote.data.content;
   const rowSpan = newNote.rowSpan;
-  const columnSpan = newNote.columnSpan; 
+  const columnSpan = newNote.columnSpan;
 
   const response = await fetch(
     "http://127.0.0.1:8090/api/collections/noteContent/records",
@@ -86,5 +86,18 @@ export async function addNotePocketBase(newNote: Note) {
 
   if (!response2.ok) {
     throw new Error("Erro ao adicionar registro");
+  }
+}
+
+export async function deleteNotePocketBase(id: string) {
+  const response = await fetch(
+    `http://127.0.0.1:8090/api/collections/note/records/${id}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Erro ao excluir registro");
   }
 }
