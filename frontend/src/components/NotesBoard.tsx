@@ -68,7 +68,8 @@ export default function NotesBoard() {
   function editNote(noteContent: NoteContent) {
     const noteToEdit = getNoteById(currentNoteId);
     if (noteToEdit) {
-      noteToEdit.data = noteContent;
+      // noteToEdit.data = noteContent;
+      
       setNotes(notes);
     }
     setCurrentNoteId(NOTE_UNSET);

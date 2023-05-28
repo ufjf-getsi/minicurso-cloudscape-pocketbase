@@ -93,11 +93,26 @@ export async function deleteNotePocketBase(id: string) {
   const response = await fetch(
     `http://127.0.0.1:8090/api/collections/note/records/${id}`,
     {
-      method: "DELETE",
+      method: "GET",
     }
   );
+  const data = response.json();
 
-  if (!response.ok) {
-    throw new Error("Erro ao excluir registro");
-  }
+  //resolve o problema das promessas
+  const promise = Promise.resolve(data);
+
+  promise.then(async (value) => {
+    const noteContentId = value.data;
+
+    const response = await fetch(
+      `http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao excluir registro");
+    }
+  });
 }
