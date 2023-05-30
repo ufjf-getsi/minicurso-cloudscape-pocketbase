@@ -41,14 +41,12 @@ export function fetchData(setStateDataFuc: Function) {
   });
 }
 
-
 //ADICIONA NOTA NO BD
 export async function addNotePocketBase(newNote: Note) {
   const title = newNote.data.title;
   const content = newNote.data.content;
   const rowSpan = newNote.rowSpan;
   const columnSpan = newNote.columnSpan;
-
 
   //cria primeiro o noteContent
   const response = await fetch(
@@ -75,7 +73,7 @@ export async function addNotePocketBase(newNote: Note) {
   //pega o id do noteContent gerado
   const data: string = noteContent.id;
 
-  //cria o Note com o id do noteContent no atributo data 
+  //cria o Note com o id do noteContent no atributo data
   const response2 = await fetch(
     "http://127.0.0.1:8090/api/collections/note/records",
     {
@@ -96,7 +94,6 @@ export async function addNotePocketBase(newNote: Note) {
   }
 }
 
-
 //APAGA NOTA NO BD
 export async function deleteNotePocketBase(id: string) {
   //busca a note em questão pelo id para pegar o id do noteContent
@@ -115,7 +112,6 @@ export async function deleteNotePocketBase(id: string) {
     //pega o id do noteContent
     const noteContentId = value.data;
 
-
     //deleta o noteContent (que por cascata deleta o Note)
     const response = await fetch(
       `http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`,
@@ -131,7 +127,9 @@ export async function deleteNotePocketBase(id: string) {
 }
 
 //EDITA NOTA NO BD
-export async function editNotePocketBase(id: string, noteContent : NoteContent) {
+export async function editNotePocketBase(id: string, noteContent: NoteContent) {
+  console.log("Estilos editados!");
+
   //busca a note em questão pelo id para pegar o id do noteContent
   const response = await fetch(
     `http://127.0.0.1:8090/api/collections/note/records/${id}`,
@@ -141,7 +139,7 @@ export async function editNotePocketBase(id: string, noteContent : NoteContent) 
   );
 
   if (!response.ok) {
-    throw new Error('Erro ao editar puxar id de registro');
+    throw new Error("Erro ao editar puxar id de registro");
   }
 
   const data = await response.json();
@@ -150,28 +148,79 @@ export async function editNotePocketBase(id: string, noteContent : NoteContent) 
   const promise = Promise.resolve(data);
 
   promise.then(async (value) => {
-
     //pega o id do noteContent
     const noteContentId = value.data;
-    
+
     //salva os valores da mudança em constantes
     const title = noteContent.title;
     const content = noteContent.content;
 
     //faz a edição
-    const response = await fetch(`http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`, {
-      method: 'PATCH', // ou 'PATCH' para atualização parcial
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title, 
-        content,
-      }),
-    });
-  
+    const response = await fetch(
+      `http://127.0.0.1:8090/api/collections/noteContent/records/${noteContentId}`,
+      {
+        method: "PATCH", // ou 'PATCH' para atualização parcial
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          content,
+        }),
+      }
+    );
+
     if (!response.ok) {
-      throw new Error('Erro ao editar registro');
+      throw new Error("Erro ao editar registro");
+    }
+  });
+}
+
+//EDITA NOTA NO BD
+export async function editNoteStyle(id: string) {
+  console.log("funcao chamada");
+  //busca a note em questão pelo id para pegar o id do noteContent
+  const response = await fetch(
+    `http://127.0.0.1:8090/api/collections/note/records/${id}`,
+    {
+      method: "GET",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Erro ao editar puxar id de registro");
+  }
+
+  const data = await response.json();
+
+  //resolve o problema das promessas
+  const promise = Promise.resolve(data);
+
+  promise.then(async (value) => {
+    const rowSpan = value.rowSpan;
+    const columnSpan = value.columnSpan;
+    const columnOffset = value.columnOffset;
+
+    //faz a edição
+    const response = await fetch(
+      `http://127.0.0.1:8090/api/collections/note/records/${id}`,
+      {
+        method: "PATCH", // ou 'PATCH' para atualização parcial
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rowSpan,
+          columnSpan,
+          columnOffset,
+        }),
+      }
+    );
+
+    console.log(`Nota editada. Nova posição ${value.columnOffset}`);
+
+    if (!response.ok) {
+      throw new Error("Erro ao editar estilo");
     }
   });
 }

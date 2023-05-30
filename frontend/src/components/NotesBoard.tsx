@@ -18,7 +18,7 @@ import {
   addNotePocketBase,
   deleteNotePocketBase,
   editNotePocketBase,
-  //editNoteStyle,
+  editNoteStyle,
   fetchData,
 } from "../dbConnection";
 
@@ -126,9 +126,11 @@ export default function NotesBoard() {
   }
 
   function handleSaveButtonClick() {
-    // notes.forEach((note) => {
-    //   editNoteStyle(note.id);
-    // });
+    notes.forEach((note) => {
+      editNoteStyle(note.id);
+      console.log(note.data.title);
+      console.log(note.columnOffset);
+    });
 
     setHasChanged(false);
   }
