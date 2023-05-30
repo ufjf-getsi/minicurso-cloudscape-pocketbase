@@ -14,7 +14,13 @@ import {
 import { useEffect, useState } from "react";
 import NoteModal from "./NoteModal";
 import { Note, NoteContent } from "../types";
-import { addNotePocketBase, deleteNotePocketBase, editNotePocketBase, fetchData } from "../dbConnection";
+import {
+  addNotePocketBase,
+  deleteNotePocketBase,
+  editNotePocketBase,
+  //editNoteStyle,
+  fetchData,
+} from "../dbConnection";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -120,14 +126,16 @@ export default function NotesBoard() {
   }
 
   function handleSaveButtonClick() {
-    console.log(notes);
-    // TODO: Save notes to database
+    // notes.forEach((note) => {
+    //   editNoteStyle(note.id);
+    // });
+
     setHasChanged(false);
   }
 
   //PARTE DE PUXAR AS NOTAS PELO PROPRIO POCKETBASE
   useEffect(() => {
-    fetchData(setNotes);
+    if (hasChanged == false) fetchData(setNotes);
   }, [notes]);
 
   return (
