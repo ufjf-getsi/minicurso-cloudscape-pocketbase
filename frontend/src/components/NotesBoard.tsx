@@ -21,32 +21,32 @@ import {
   editNoteStyle,
   fetchData,
 } from "../dbConnection";
+import { flushSync } from "react-dom";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
-    {
-      id: "1",
-      rowSpan: 1,
-      columnSpan: 1,
-      data: { title: "Nota 1", content: "Primeiro item" },
-    },
-    {
-      id: "2",
-      rowSpan: 1,
-      columnSpan: 1,
-      data: { title: "Nota 2", content: "Segundo item" },
-    },
-    {
-      id: "3",
-      rowSpan: 1,
-      columnSpan: 1,
-      data: { title: "Nota 3", content: "Terceiro item" },
-    },
+    // {
+    //   id: "1",
+    //   rowSpan: 1,
+    //   columnSpan: 1,
+    //   data: { title: "Nota 1", content: "Primeiro item" },
+    // },
+    // {
+    //   id: "2",
+    //   rowSpan: 1,
+    //   columnSpan: 1,
+    //   data: { title: "Nota 2", content: "Segundo item" },
+    // },
+    // {
+    //   id: "3",
+    //   rowSpan: 1,
+    //   columnSpan: 1,
+    //   data: { title: "Nota 3", content: "Terceiro item" },
+    // },
   ]);
 
   const NOTE_UNSET = "";
   const emptyNoteContent = { title: "", content: "" };
-  // const [newNotesCounter, setNewNotesCounter] = useState(0);
 
   const [updatingNoteContent, setUpdatingNoteContent] =
     useState<NoteContent>(emptyNoteContent);
@@ -59,34 +59,46 @@ export default function NotesBoard() {
     return notes.find((note) => note.id === noteId);
   }
 
-  function addNote(noteContent: NoteContent) {
+  async function updateData() {
+    await fetchData().then((response) => {
+      setNotes(response);
+    });
+    setHasChanged(false);
+  }
+
+  async function addNote(noteContent: NoteContent) {
     const newNote = {
       id: "",
       rowSpan: 1,
       columnSpan: 1,
       data: noteContent,
     };
-    addNotePocketBase(newNote);
-    // setNewNotesCounter(newNotesCounter + 1);
-    // setNotes([...notes, newNote]);
+    await addNotePocketBase(newNote);
+    setCurrentNoteId(NOTE_UNSET);
+    await updateData();
   }
 
-  function editNote(noteContent: NoteContent) {
+  async function editNote(noteContent: NoteContent) {
+    await editNotePocketBase(currentNoteId, noteContent);
     const noteToEdit = getNoteById(currentNoteId);
     if (noteToEdit) {
-      // noteToEdit.data = noteContent;
-      editNotePocketBase(currentNoteId, noteContent);
-      setNotes(notes);
+    }
+    setCurrentNoteId(NOTE_UNSET);
+    await updateData();
+  }
+
+  async function deleteNote(noteId: string) {
+    if (noteId) {
+      await deleteNotePocketBase(noteId);
     }
     setCurrentNoteId(NOTE_UNSET);
   }
 
-  function handleNoteUpdate(newData: NoteContent) {
-    setHasChanged(true);
+  async function handleNoteUpdate(newData: NoteContent) {
     if (isEditing) {
-      editNote(newData);
+      await editNote(newData);
     } else {
-      addNote(newData);
+      await addNote(newData);
     }
     setModalVisible(false);
   }
@@ -98,7 +110,7 @@ export default function NotesBoard() {
     setModalVisible(true);
   }
 
-  function handleButtonDropdownClick(
+  async function handleButtonDropdownClick(
     noteId: string,
     buttonId: any,
     actions: any
@@ -111,9 +123,8 @@ export default function NotesBoard() {
         setModalVisible(true);
         break;
       case "remove":
-        setHasChanged(true);
-        // actions.removeItem();
-        deleteNotePocketBase(noteId);
+        actions.removeItem();
+        await deleteNote(noteId);
         break;
       default:
         break;
@@ -126,19 +137,19 @@ export default function NotesBoard() {
   }
 
   function handleSaveButtonClick() {
+    // Deveria receber na função gerenciadora a lista de notas, e dentro dela fazer o loop
     notes.forEach((note) => {
       editNoteStyle(note.id);
       console.log(note.data.title);
       console.log(note.columnOffset);
     });
-
     setHasChanged(false);
   }
 
   //PARTE DE PUXAR AS NOTAS PELO PROPRIO POCKETBASE
   useEffect(() => {
-    if (hasChanged == false) fetchData(setNotes);
-  }, [notes]);
+    updateData();
+  }, []);
 
   return (
     <div>

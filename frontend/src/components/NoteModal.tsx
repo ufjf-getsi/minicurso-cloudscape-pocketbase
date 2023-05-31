@@ -27,9 +27,9 @@ export default function NoteModal(props: NoteModalProps) {
     setFields(props.noteContent);
   }, [props.visible]);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (fields.title !== "" && fields.content !== "") {
-      props.handleNoteUpdate(fields);
+      await props.handleNoteUpdate(fields);
     }
   }
 
@@ -44,7 +44,7 @@ export default function NoteModal(props: NoteModalProps) {
             <Button variant="link" onClick={() => props.setVisible(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={handleSubmit}>
+            <Button variant="primary" onClick={() => handleSubmit()}>
               {props.isEditing ? "Editar" : "Adicionar"}
             </Button>
           </SpaceBetween>

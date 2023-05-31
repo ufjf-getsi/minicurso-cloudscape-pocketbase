@@ -1,7 +1,7 @@
 import { NotePocketBase, NoteContent, Note } from "./types";
 
 //LISTA TODAS AS NOTAS DO BD
-export function fetchData(setStateDataFuc: Function) {
+export async function fetchData(): Promise<Note[]> {
   const fetchNotes = async () => {
     const res = await fetch(
       "http://127.0.0.1:8090/api/collections/note/records?expand=data"
@@ -14,7 +14,8 @@ export function fetchData(setStateDataFuc: Function) {
   const promise = Promise.resolve(fetchNotes());
 
   //pega o resultado das promessas
-  promise.then((value) => {
+  const noteArray: Note[] = [];
+  await promise.then(async (value) => {
     //Cria novo array com os objetos do conteudo da nota (title, content)
     let noteContentArray: NoteContent[] = [];
     value.map(({ expand }) => {
@@ -30,15 +31,15 @@ export function fetchData(setStateDataFuc: Function) {
     }));
 
     //Junta os dois adicionando o conteudo dentro do novo campo "data"
-    const newArrayTeste: Note[] = [];
     for (let i = 0; i < notesWithRightFields.length; i++) {
       const record = { ...notesWithRightFields[i], data: noteContentArray[i] };
-      newArrayTeste.push(record);
+      noteArray.push(record);
     }
 
-    //seta o novo estado das notas
-    setStateDataFuc(newArrayTeste);
+    // //seta o novo estado das notas
+    // await setData(noteArray);
   });
+  return noteArray;
 }
 
 //ADICIONA NOTA NO BD
@@ -128,8 +129,6 @@ export async function deleteNotePocketBase(id: string) {
 
 //EDITA NOTA NO BD
 export async function editNotePocketBase(id: string, noteContent: NoteContent) {
-  console.log("Estilos editados!");
-
   //busca a note em questão pelo id para pegar o id do noteContent
   const response = await fetch(
     `http://127.0.0.1:8090/api/collections/note/records/${id}`,
@@ -147,7 +146,7 @@ export async function editNotePocketBase(id: string, noteContent: NoteContent) {
   //resolve o problema das promessas
   const promise = Promise.resolve(data);
 
-  promise.then(async (value) => {
+  await promise.then(async (value) => {
     //pega o id do noteContent
     const noteContentId = value.data;
 

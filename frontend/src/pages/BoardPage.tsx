@@ -1,7 +1,6 @@
 import {
   AppLayout,
   Button,
-  Container,
   ContentLayout,
   Header,
   SpaceBetween,
