@@ -26,7 +26,9 @@ export default function LoginForm() {
             <Button formAction="none" variant="link">
               Problemas para logar?
             </Button>
-            <Button variant="primary">Login</Button>
+            <Button variant="primary" href="/BoardPage">
+              Login
+            </Button>
           </SpaceBetween>
         }
       >

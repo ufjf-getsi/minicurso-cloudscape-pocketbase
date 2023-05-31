@@ -21,7 +21,6 @@ import {
   editNoteStyle,
   fetchData,
 } from "../dbConnection";
-import { flushSync } from "react-dom";
 
 export default function NotesBoard() {
   const [notes, setNotes] = useState<Note[]>([
@@ -79,9 +78,9 @@ export default function NotesBoard() {
   }
 
   async function editNote(noteContent: NoteContent) {
-    await editNotePocketBase(currentNoteId, noteContent);
     const noteToEdit = getNoteById(currentNoteId);
     if (noteToEdit) {
+      await editNotePocketBase(currentNoteId, noteContent);
     }
     setCurrentNoteId(NOTE_UNSET);
     await updateData();
@@ -153,13 +152,13 @@ export default function NotesBoard() {
 
   return (
     <div>
-      <NoteModal
-        visible={modalVisible}
-        setVisible={setModalVisible}
-        noteContent={updatingNoteContent}
-        handleNoteUpdate={handleNoteUpdate}
-        isEditing={isEditing}
-      />
+<NoteModal
+  visible={modalVisible}
+  setVisible={setModalVisible}
+  noteContent={updatingNoteContent}
+  handleNoteUpdate={handleNoteUpdate}
+  isEditing={isEditing}
+/>
       <Container
         header={
           <Header
