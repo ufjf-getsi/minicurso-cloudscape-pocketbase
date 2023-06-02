@@ -138,9 +138,7 @@ export default function NotesBoard() {
   function handleSaveButtonClick() {
     // Deveria receber na função gerenciadora a lista de notas, e dentro dela fazer o loop
     notes.forEach((note) => {
-      editNoteStyle(note.id);
-      console.log(note.data.title);
-      console.log(note.columnOffset);
+      editNoteStyle(note.id, note.rowSpan, note.columnSpan);
     });
     setHasChanged(false);
   }

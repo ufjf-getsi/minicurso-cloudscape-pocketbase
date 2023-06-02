@@ -5,8 +5,8 @@ export interface NoteContent {
 
 export interface Note {
   id: string;
-  rowSpan?: number;
-  columnSpan?: number;
+  rowSpan: number;
+  columnSpan: number;
   columnOffset?: { [columns: number]: number };
   data: NoteContent;
 }

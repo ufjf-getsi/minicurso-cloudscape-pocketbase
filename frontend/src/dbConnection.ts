@@ -176,50 +176,28 @@ export async function editNotePocketBase(id: string, noteContent: NoteContent) {
 }
 
 //EDITA NOTA NO BD
-export async function editNoteStyle(id: string) {
-  console.log("funcao chamada");
-  //busca a note em questão pelo id para pegar o id do noteContent
+export async function editNoteStyle(id: string, newRowSpan: number, newColumnSpan:number) {
+  const rowSpan = newRowSpan;
+  const columnSpan = newColumnSpan;
+
+  console.log(rowSpan);
+  console.log(columnSpan);
+
   const response = await fetch(
     `http://127.0.0.1:8090/api/collections/note/records/${id}`,
     {
-      method: "GET",
+      method: "PATCH", // ou 'PATCH' para atualização parcial
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        rowSpan,
+        columnSpan,
+      }),
     }
   );
 
   if (!response.ok) {
-    throw new Error("Erro ao editar puxar id de registro");
+    throw new Error("Erro ao editar registro");
   }
-
-  const data = await response.json();
-
-  //resolve o problema das promessas
-  const promise = Promise.resolve(data);
-
-  promise.then(async (value) => {
-    const rowSpan = value.rowSpan;
-    const columnSpan = value.columnSpan;
-    const columnOffset = value.columnOffset;
-
-    //faz a edição
-    const response = await fetch(
-      `http://127.0.0.1:8090/api/collections/note/records/${id}`,
-      {
-        method: "PATCH", // ou 'PATCH' para atualização parcial
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          rowSpan,
-          columnSpan,
-          columnOffset,
-        }),
-      }
-    );
-
-    console.log(`Nota editada. Nova posição ${value.columnOffset}`);
-
-    if (!response.ok) {
-      throw new Error("Erro ao editar estilo");
-    }
-  });
 }
