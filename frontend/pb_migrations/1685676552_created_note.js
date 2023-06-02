@@ -1,15 +1,15 @@
 migrate((db) => {
   const collection = new Collection({
-    "id": "ouoqyb55nepxa24",
-    "created": "2023-05-27 17:45:54.896Z",
-    "updated": "2023-05-27 17:45:54.896Z",
+    "id": "99i3ojltae0ryek",
+    "created": "2023-06-02 03:29:12.790Z",
+    "updated": "2023-06-02 03:29:12.790Z",
     "name": "note",
     "type": "base",
     "system": false,
     "schema": [
       {
         "system": false,
-        "id": "6eueyvsk",
+        "id": "cclnw2bo",
         "name": "rowSpan",
         "type": "number",
         "required": false,
@@ -21,7 +21,7 @@ migrate((db) => {
       },
       {
         "system": false,
-        "id": "fcb7rjkg",
+        "id": "x27ykekn",
         "name": "columnSpan",
         "type": "number",
         "required": false,
@@ -33,7 +33,7 @@ migrate((db) => {
       },
       {
         "system": false,
-        "id": "i6kuqqfz",
+        "id": "p5igxcap",
         "name": "columnOffset",
         "type": "json",
         "required": false,
@@ -42,14 +42,14 @@ migrate((db) => {
       },
       {
         "system": false,
-        "id": "dmcxi9ib",
+        "id": "hsgmthvc",
         "name": "data",
         "type": "relation",
         "required": false,
         "unique": false,
         "options": {
-          "collectionId": "unyeab0tujvajw4",
-          "cascadeDelete": false,
+          "collectionId": "5sgz5lwp21hgb96",
+          "cascadeDelete": true,
           "minSelect": null,
           "maxSelect": 1,
           "displayFields": []
@@ -57,18 +57,18 @@ migrate((db) => {
       }
     ],
     "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": "",
-    "updateRule": "",
-    "deleteRule": "",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
     "options": {}
   });
 
   return Dao(db).saveCollection(collection);
 }, (db) => {
   const dao = new Dao(db);
-  const collection = dao.findCollectionByNameOrId("ouoqyb55nepxa24");
+  const collection = dao.findCollectionByNameOrId("99i3ojltae0ryek");
 
   return dao.deleteCollection(collection);
 })
